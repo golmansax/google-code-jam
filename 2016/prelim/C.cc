@@ -6,18 +6,19 @@
 
 using namespace std;
 
-long long get_factor(long long x) {
-  for (long long j = 2; j < sqrt(x); j++) {
-    if (x % j == 0) {
-      return j;
-    }
+#define MAX_TRY 10000000
+
+unsigned long long get_factor(unsigned long long x) {
+  for (unsigned long long j = 2; j < sqrt(x); j++) {
+    if (x % j == 0) { return j; }
+    if (j > MAX_TRY) { return -1; }
   }
 
   return -1;
 }
 
 int main() {
-  unordered_map<long long, long long> factors;
+  unordered_map<unsigned long long, unsigned long long> factors;
 
   int n_cases;
   cin >> n_cases;
@@ -28,9 +29,9 @@ int main() {
     int n, count;
     cin >> n >> count;
 
-    long long pows[10 - 2 + 1][n];
+    unsigned long long pows[10 - 2 + 1][n];
     for (int j = 2; j <= 10; j++) {
-      long long temp_pow = 1;
+      unsigned long long temp_pow = 1;
 
       for (int k = 0; k < n; k++) {
         pows[j - 2][k] = temp_pow;
@@ -38,14 +39,15 @@ int main() {
       }
     }
 
-    for (long long i = 0; i < (int)pow(2, n - 2); i++){
+    for (unsigned long long i = 0; i < (int)pow(2, n - 2); i++){
+      // cout << "********** NEW NUM **************" << endl;
       // Get binary representation
       bool digits[n];
       digits[0] = true;
       digits[n - 1] = true;
       for (int j = 0; j < n - 2; j++) { digits[j + 1] = false; }
 
-      long long temp = i;
+      unsigned long long temp = i;
       int temp_index = 1;
       while (temp > 0) {
         digits[temp_index] = (temp % 2 == 1);
@@ -54,13 +56,14 @@ int main() {
       }
 
       // Check 2->10
-      long long ans[10 - 2 + 1];
+      unsigned long long ans[10 - 2 + 1];
       bool works = true;
       for (int j = 2; j <= 10; j++) {
-        long long total = 0;
+        unsigned long long total = 0;
         for (int k = 0; k < n; k++) {
           if (digits[k]) { total += pows[j - 2][k]; }
         }
+        // cout << "  trying base " << j << " and TOTAL " << total << endl;
 
         if (factors.find(total) == factors.end()) {
           factors[total] = get_factor(total);
